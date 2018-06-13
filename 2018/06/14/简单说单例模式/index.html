@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="花笺"><title>简单说单例模式 · 花笺说</title><meta name="description" content="单例模式定义：单例模式，是一种常用的软件设计模式。在它的核心结构中只包含一个被称为单例的特殊类。通过单例模式可以保证系统中，应用该模式的类一个类只有一个实例。即一个类只有一个对象实例。
+通俗地说，使用单例模式确保一个类从始至终只被new一次，也就是只产生一个对象。
+那么就该思考了，怎么样才能让一个类"><meta name="keywords" content="编程 java c c++ php python"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">花笺说</a></h3><div class="description"><p>计算机技术学习及分享的博客，内容涉及各类编程语言，java,c,c++,php,python</p></div></div></div><ul class="social-links"></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">主页</a></li><li><a href="/about">关于</a></li><li><a href="/categories">分类</a></li><li><a href="/archives">归档</a></li><li><a href="/navigation">导航</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>简单说单例模式</a></h3></div><div class="post-content"><h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><p><strong>定义</strong>：单例模式，是一种常用的软件设计模式。在它的核心结构中只包含一个被称为单例的特殊类。通过单例模式可以保证系统中，应用该模式的类一个类只有一个实例。即一个类只有一个对象实例。</p>
+<p>通俗地说，使用单例模式确保一个类从始至终只被new一次，也就是只产生一个对象。</p>
+<p>那么就该思考了，怎么样才能让一个类只被new一次呢？那我们先回忆如何产生一个对象，java对象的产生都是通过构造函数，所以呢思路来了，把构造器私有，外部就没办法去new产生对象了？以为这就完了？不存在的这只是一小步，具体流程及方式下面慢慢说来：</p>
+<p><strong>单例模式主要分为两种模式：</strong></p>
+<ol>
+<li><strong>懒汉式</strong></li>
+<li><strong>饿汉式</strong></li>
+</ol>
+<p>首先说一下懒汉式：<br>懒汉式见名知意，比较懒，为何比较懒呢，因为在用的时候才去产生一个对象。是不是够懒得。好了接下来看一下具体如何实现：</p>
+<pre><code>/**
+ * 单例模式
+ * @author 花笺
+ */
+public class King {
+    //古时候每朝只有一个 Emperor皇帝
+    private static King instance = null;
+    private King (){}
+    public static King getInstance (){
+        if (instance == null)
+            instance = new King();
+        return instance;
+
+    }
+}
+</code></pre><p>测试一下写的代码：</p>
+<pre><code>public static void main(String[] args) {
+    King lishiming = King.getInstance();
+    King lilongji = King.getInstance();
+    System.out.println(&quot;对象相等 :&quot; +(lishiming == lilongji));
+}
+</code></pre><p>结果为：</p>
+<p><img src="https://img-blog.csdn.net/20180611193609396?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Nqd19uaWdodA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></p>
+<p>但是对于这种情况就会有问题</p>
+<pre><code>Thread A = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                King lishiming = King.getInstance();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(&quot;线程A产生的对象 :&quot; + lishiming.toString());
+            }
+        });
+        Thread B = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                King lilongji = King.getInstance();
+                System.out.println(&quot;线程B产生的对象:&quot; + lilongji.toString());
+            }
+        });
+        A.start();
+        B.start();
+</code></pre><p>产生的结果：</p>
+<p><img src="https://img-blog.csdn.net/2018061119363520?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Nqd19uaWdodA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></p>
+<p>但是这样会存在一个问题，对于单线程程序这个完全没有问题。但是对于多线程程序来说，这会出问题的！对于多个线程同时访问的时候就不能保证只产生一个对象了，这就是线程不安全。<br>既然是线程不安全那就给他加个锁，让他线程安全，当然加锁的粒度越小越好，这里只为简单的演示。</p>
+<pre><code>//古时候每朝只有一个 Emperor皇帝
+private static King instance = null;
+private King (){}
+public synchronized static King getInstance (){
+    if (instance == null)
+        instance = new King();
+    return instance;
+
+}
+</code></pre><p>实验结果：</p>
+<p><img src="https://img-blog.csdn.net/20180611193657467?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Nqd19uaWdodA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></p>
+<p>这样不就ok了？是解决了线程不安全的问题，但是又会存在另一个问题，效率问题，加锁之后在一个线程访问时其他的线程都在等待会消耗很多的时间。所以接下来看另外一种方式：饿汉式</p>
+<p>饿汉式：<br>也是见名知意，饿汉很饿，很着急，所以在声明对象是就对产生实例</p>
+<pre><code>/**
+ * 饿汉式单例
+  * @author 花笺
+  */
+public class Emperor {
+    private static Emperor instance = new Emperor();
+    private Emperor (){}
+    public static Emperor getInstance (){
+        return instance;
+    }
+}
+</code></pre><p>测试类：</p>
+<pre><code>public static void main(String[] args) {
+    Thread A = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Emperor lishiming = Emperor.getInstance();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(&quot;线程A产生的对象 :&quot; + lishiming.toString());
+        }
+    });
+    Thread B = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Emperor lilongji = Emperor.getInstance();
+            System.out.println(&quot;线程B产生的对象:&quot; + lilongji.toString());
+        }
+    });
+    A.start();
+    B.start();
+</code></pre><p>结果：</p>
+<p><img src="https://img-blog.csdn.net/20180611193714807?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Nqd19uaWdodA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></p>
+<p>饿汉式对象在类加载的时候就会完成创建，不存在线程安全问题，那么是不是就是饿汉式一定比懒汉式要好呢？饿汉式可是天生线程安全的！但是也存在一个问题，那就是如果这个对象从不用呢，饿汉式从类加载的同时就会产生实例，占用内存，如果不用则会浪费这段内存。所以二者各有利弊。</p>
+<p>总之单例模式只会产生一个对象，这种模式还是使用比较普遍的，windows系统中的任务管理器等。</p>
+<p>更多内容请访问我的博客：<a href="http://www.skydinary.com/" target="_blank" rel="noopener">天空日记</a></p>
+</div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2018-06-14</span><i class="fa fa-tag"></i><a class="tag" href="/categories/java/" title="java">java </a><a class="tag" href="/tags/java/" title="java">java </a><a class="tag" href="/tags/设计模式/" title="设计模式">设计模式 </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2018/06/14/简单说单例模式/,花笺说,简单说单例模式,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2018/06/13/hello-world/" title="Hello World">Próximo post</a></li></ul></div></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
