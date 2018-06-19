@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="花笺"><title>linux文件权限管理(二) · 花笺说</title><meta name="description" content="文件的权限管理很重要，那么如何改变文件的属性与权限呢？就需要要到下面的三个命令：
+
+chgrp :改变文件所属群组，change group的简写
+chown :改变文件拥有者，change owner的简写
+chmod :改变文件的权限, SUID, SGID, SBIT等等的特性
+
+1.改变文件"><meta name="keywords" content="编程 java c c++ php python"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">花笺说</a></h3><div class="description"><p>计算机技术学习及分享的博客，内容涉及各类编程语言，java,c,c++,php,python</p></div></div></div><ul class="social-links"></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">主页</a></li><li><a href="/about">关于</a></li><li><a href="/categories">分类</a></li><li><a href="/archives">归档</a></li><li><a href="/navigation">导航</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>linux文件权限管理(二)</a></h3></div><div class="post-content"><p>文件的权限管理很重要，那么如何改变文件的属性与权限呢？就需要要到下面的三个命令：</p>
+<ol>
+<li>chgrp :改变文件所属群组，change group的简写</li>
+<li>chown :改变文件拥有者，change owner的简写</li>
+<li>chmod :改变文件的权限, SUID, SGID, SBIT等等的特性</li>
+</ol>
+<p>1.改变文件所属群组：chgrp [-R] 将要所属的群组 filename,-R参数是对一个目录下的所有文件进行递归更改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 root root    0 6月  19 09:08 testfile</span><br><span class="line">root@localhost:/tmp# chgrp test testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 root test    0 6月  19 09:08 testfile</span><br></pre></td></tr></table></figure>
+<p>但是要注意要改成的群组必须要在/etc/group中存在，也就是已经存在的群组。</p>
+<p>2.改变文件拥有者：chown [-R] 帐号名称 文件或目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:/tmp# chown huajian testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 huajian test    0 6月  19 09:08 testfile</span><br></pre></td></tr></table></figure>
+<p>chown也可以直接修改文件所属群组，chown  [-R] 帐号:群组名称 文件/目录,只需用：进行分割即可，还可以用用户名.群组的形式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:/tmp# chown root:root testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 root root    0 6月  19 09:08 testfile</span><br><span class="line">root@localhost:/tmp# chown huajian.test testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 huajian test    0 6月  19 09:08 testfile</span><br></pre></td></tr></table></figure>
+<p>3.改变文件权限chmod [-R]  将要更改的权限 文件或目录文件权限的改变使用的是chmod这个指令,但是,权限的设置方法有两种, 分别可以使用数字或者是符号来进行权限的变更。</p>
+<p>数字类型改变文件权限：</p>
+<p>owner/group/others三种身份各有自己的read/write/execute权限，各权限的分数对照表如下:</p>
+<p>r:4   w:2   x:1</p>
+<p>也就是如果要将owner的权限更改为rwx，则对应的数字为7也就是4+2+1.同理其他两个也是。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:/tmp# chmod 777 testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rwxrwxrwx 1 huajian test    0 6月  19 09:08 testfile</span><br></pre></td></tr></table></figure>
+<p>上面的命令是将owner/group/others三者的权限全部设为rwx，当然这种更改权限的方式比较繁琐，每次都要去计算对应的数字，下面来看另一个更改权限的方式，字符更改。</p>
+<p>符号类型改变文件权限：chmod  u g o a | +(加入) -(除去) =(设置) | r w x  |文件或目录 ,user  group  others三种身份啦!那么我们就可以借由u, g, o来代表三种身份的权限!此外, a 则代表 all 亦即全部的身份。这种方式通过+-=的方式进行权限的添加，去除，赋予。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:/tmp# chmod u=rw,go=r testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 huajian test    0 6月  19 09:08 testfile</span><br></pre></td></tr></table></figure>
+<p>我如果想单独加一个小的权限该怎么办呢？用上面的方式当然可以，还有更简单的，别忘了还有+-没用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:/tmp# chmod g+w testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-rw-r-- 1 huajian test    0 6月  19 09:08 testfile</span><br><span class="line">root@localhost:/tmp# chmod g-w testfile</span><br><span class="line">root@localhost:/tmp# ls -l</span><br><span class="line">-rw-r--r-- 1 huajian test    0 6月  19 09:08 testfile</span><br></pre></td></tr></table></figure>
+<p>上面的命令是我给文件所属群组单独加了一个写的权限，突然又不想加了，然后用-去除了写权限。</p>
+<p>权限对目录的重要性：</p>
+<p>r (read contents in directory):<br>表示具有读取目录结构清单的权限,所以当你具有读取(r)一个目录的权限时,表示你<br>可以查询该目录下的文件名数据。 所以你就可以利用 ls 这个指令将该目录的内容列表显<br>示出来!</p>
+<p>w (modify contents of directory):<br>这个可写入的权限对目录来说,是很了不起的! 因为他表示你具有异动该目录结构清单<br>的权限,也就是下面这些权限:</p>
+<ul>
+<li>创建新的文件与目录;</li>
+<li>删除已经存在的文件与目录(不论该文件的权限为何!)</li>
+<li>将已存在的文件或目录进行更名;</li>
+<li>搬移该目录内的文件、目录位置。 总之,目录的w权限就与该目录下面的文件名异</li>
+<li>动有关就对了啦!</li>
+</ul>
+<p>x (access directory):</p>
+<p>可以用cd进入该目录。</p>
+<p>文件与目录权限：</p>
+<p><img src="/2018/06/19/linux文件权限管理-二/filechmod.png" alt=""></p>
+</div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2018-06-19</span><i class="fa fa-tag"></i><a class="tag" href="/tags/linux/" title="linux">linux </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2018/06/19/linux文件权限管理-二/,花笺说,linux文件权限管理(二),;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2018/06/18/linux文件权限管理/" title="linux文件权限管理(一)">Próximo post</a></li></ul></div></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
